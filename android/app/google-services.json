@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "722636290289",
+    "project_id": "nket-190ff",
+    "storage_bucket": "nket-190ff.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:722636290289:android:82bcf510d9ef06e8d61150",
+        "android_client_info": {
+          "package_name": "com.nket.nket"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyg5kbXeNz341afzkfqkDaEAEOjfqYQVI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
