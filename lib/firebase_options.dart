@@ -66,6 +66,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'nket-190ff.appspot.com',
     iosBundleId: 'com.nket.nket',
     databaseURL: 'https://nket-190ff-default-rtdb.firebaseio.com'
-
   );
 }

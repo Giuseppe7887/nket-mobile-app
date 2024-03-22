@@ -1,10 +1,15 @@
-class Item {
-  Item({
+import 'package:flutter/cupertino.dart';
+
+class NketItem {
+  NketItem({
     required this.title,
     required this.description,
     required this.products,
     required this.location,
     required this.id,
+    required this.available,
+    required this.verifiedBy,
+    required this.isClosed,
     this.isExpanded = false,
   });
 
@@ -13,5 +18,18 @@ class Item {
   List products;
   Map location;
   String id;
+  bool available;
+  String verifiedBy;
+  bool isClosed;
   bool isExpanded;
+}
+
+class NketUser {
+  NketUser({
+    required this.pricesFound,
+    required this.uid
+  });
+
+  String uid;
+  List<String> pricesFound;
 }

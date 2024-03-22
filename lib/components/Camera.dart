@@ -34,6 +34,17 @@ class _CameraState extends State<Camera> {
   @override
   void initState() {
     super.initState();
+    initCamera();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _controller.dispose();
+  }
+
+  Future<void> initCamera() async {
     getAllCameras().then((cameras) async {
       await selectCamera(cameras[0]);
       _controller = CameraController(_currentCamera, ResolutionPreset.medium);
@@ -43,13 +54,6 @@ class _CameraState extends State<Camera> {
         _initializeControllerOk = true;
       });
     });
-  }
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-    _controller.dispose();
   }
 
   @override
@@ -68,13 +72,9 @@ class _CameraState extends State<Camera> {
 
     return Expanded(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-
-
-
-
           if (pictureTaken != "")
             Image.file(File(pictureTaken))
           else if (!_initializeControllerOk)
@@ -88,23 +88,36 @@ class _CameraState extends State<Camera> {
                 child: IconButton(
                     icon: const Icon(Icons.circle_outlined, size: 75),
                     onPressed: takePicture)),
-
           if (pictureTaken != "")
-
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  IconButton(padding: const EdgeInsets.all(15),onPressed: (){}, icon: const Icon(Icons.send),style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.green),)),
-                  const Padding(padding: EdgeInsets.all(10)),
-                  IconButton(padding: const EdgeInsets.all(15), onPressed: (){}, icon: const Icon(Icons.cancel),style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.red),)),
-                ],
-              ),
-            ),
-        ],
-      ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                IconButton(
+                    padding: const EdgeInsets.all(15),
+                    onPressed: () {
+                      // sendVerification();
+                    },
+                    icon: const Icon(Icons.send),
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.green),
+                    )),
+                IconButton(
+                    padding: const EdgeInsets.all(15),
+                    onPressed: () {
+                      setState(() {
+                        pictureTaken = "";
+                        initCamera();
+                      });
+                    },
+                    icon: const Icon(Icons.cancel),
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.red),
+                    ))
+              ]
+            )
+        ]
+      )
     );
   }
 }

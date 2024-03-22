@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:nket/main.dart';
 import 'package:nket/screens/SelectedItem.dart';
+import 'package:nket/services/utils.dart';
 
 // shared class
 import 'package:nket/shared.dart';
-
 import 'package:nket/services/firebase/rtdb.dart';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:nket/services/firebase/auth.dart';
+
+import 'package:vm_service/utils.dart';
+
 
 class PriceList extends StatefulWidget {
   const PriceList({super.key});
@@ -18,48 +25,40 @@ class _PriceListState extends State<PriceList> {
 
 
 
-
-
-  // final List<Item> _data = [
-  //   Item(
-  //       title: "Conad prices #098435",
-  //       description: "Price research for Naples conad in cavour street 5",
-  //       products: ["pane", "latte"],
-  //       location: {"lat": "E32534FEWFAE", "long": "O4r8hf8d83"}),
-  //   Item(
-  //       title: "MD prices #098443",
-  //       description: "Price research for Roma MD in dante street",
-  //       products: ["pasta", "latte", "caramelle", "pane", "acqua", "biscotti"],
-  //       location: {"lat": "E32435FEWFAE", "long": "32432rr3r3"}),
-  //   Item(
-  //       title: "Todis prices #098422",
-  //       description:
-  //           "Price research for Marcianise Todis in Saverio merola street",
-  //       products: ["pane", "latte", "uova", "farina"],
-  //       location: {"lat": "E32435FEWFAE", "long": "32432rr3r3"}),
-  // ];
-
   final String instructions = "start verification";
+  final String expired = "not available";
 
-  Future<void> onSelectItem({required Item item}) async {
+  Future<void> onSelectItem({required NketItem item}) async {
     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
       return SelectedItem(item: item);
     }));
   }
 
-  List<Item> _data = [];
+  List<NketItem> _data = [];
 
-
-  @override
+    @override
   void initState() {
     // TODO: implement initState
+
+
+
     RtDb().update(cb: (Map result){
-      _data = result.keys.map((e) => Item(title: result[e]['title'], description: result[e]['description'],products: result[e]['products'], location:  result[e]['location'], id: result[e]['id'])).toList();
+
+      List<NketItem> resultToList = result.keys.map((e) => NketItem(title: result[e]['title'], description: result[e]['description'],products: result[e]['products'], location:  result[e]['location'], id: result[e]['id'], available: result[e]['available'], verifiedBy:result[e]['verifiedBy'], isClosed: result[e]['isClosed'] )).toList();
+
+        Map mapped = Utils().getMappedList(fullList: resultToList);
+        print(mapped);
+
       setState(() {
+
+        _data = result.keys.map((e) => NketItem(title: result[e]['title'], description: result[e]['description'],products: result[e]['products'], location:  result[e]['location'], id: result[e]['id'], available: result[e]['available'], verifiedBy:result[e]['verifiedBy'], isClosed: result[e]['isClosed'] )).toList();
 
       });
     }).catchError((err){print(err);});
   }
+
+  User? currentUser =Auth().currentUser();
+
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +70,7 @@ class _PriceListState extends State<PriceList> {
               _data[index].isExpanded = isExpanded;
             });
           },
-          children: _data.map<ExpansionPanel>((Item item) {
+          children: _data.map<ExpansionPanel>((NketItem item) {
             return ExpansionPanel(
               headerBuilder: (BuildContext context, bool isExpanded) {
                 return ListTile(
@@ -90,16 +89,22 @@ class _PriceListState extends State<PriceList> {
                 // trailing: ,
                 subtitle: Padding(
                   padding: const EdgeInsets.only(top: 20, bottom: 10),
-                  child: InkWell(
+                  child: item.available == true ?  InkWell(
                     onTap: ()=>onSelectItem(item: item),
-                    child: Row(
+                    child:  Row(
                       children: [
-                        Text(instructions),
+                        Text(instructions,style: TextStyle(color: Colors.orange)),
                         const Padding(padding: EdgeInsets.only(right: 10)),
                         const Icon(Icons.verified, color: Colors.orange)
-                      ],
-                    ),
-                  ),
+                      ]
+                    )
+                  ):Row(
+                      children: [
+                        item.verifiedBy == currentUser!.uid && !item.isClosed?const Text("back to price",style: TextStyle(color: Colors.green)):Text(expired,style: const TextStyle(color: Colors.grey)),
+                        const Padding(padding: EdgeInsets.only(right: 10)),
+                        item.verifiedBy == currentUser!.uid && !item.isClosed? const Icon(Icons.keyboard_return_sharp, color: Colors.green):const Icon(Icons.back_hand,color: Colors.grey)
+                      ]
+                  )
                 ),
               ),
               isExpanded: item.isExpanded,
