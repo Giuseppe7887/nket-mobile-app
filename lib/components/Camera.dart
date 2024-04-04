@@ -157,6 +157,21 @@ class _CameraState extends State<Camera> {
       //     });
     }
 
+
+
+
+    Future<void> debugRequest()async{
+      Uri DEBUG_API = Uri.parse("https://faas-fra1-afec6ce7.doserverless.co/api/v1/web/fn-760378e2-baa1-4554-a8e9-6c984e8dc724/default/test-1");
+      http.get(DEBUG_API).then((response){
+        Map<String, dynamic> toJson = json.decode(response.body);
+
+        String status = toJson["status"];
+        String message = toJson["message"];
+
+        assignResearchToUser(status,message);
+      });
+    }
+
     void sendVerification() async {
       var api = Uri.parse("http://192.168.208.114:8000/upload");
 
@@ -226,9 +241,7 @@ class _CameraState extends State<Camera> {
                 children: [
                   IconButton(
                       padding: const EdgeInsets.all(15),
-                      onPressed: () {
-                        sendVerification();
-                      },
+                      onPressed: debugRequest,
                       icon: const Icon(Icons.send),
                       style: ButtonStyle(
                         backgroundColor:
