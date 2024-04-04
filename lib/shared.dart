@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 
 class NketItem {
   NketItem({
@@ -10,8 +9,19 @@ class NketItem {
     required this.available,
     required this.verifiedBy,
     required this.isClosed,
+    required this.firebaseId,
     this.isExpanded = false,
   });
+
+  bool getType({required String conf}){
+    switch(conf){
+      case "available":
+        return available;
+      default:
+        return false;
+    }
+  }
+
 
   String title;
   String description;
@@ -21,6 +31,7 @@ class NketItem {
   bool available;
   String verifiedBy;
   bool isClosed;
+  String firebaseId;
   bool isExpanded;
 }
 

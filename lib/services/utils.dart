@@ -1,4 +1,5 @@
 import "dart:convert";
+import "dart:ui";
 import "package:flutter/material.dart";
 import "package:nket/services/firebase/auth.dart";
 import "package:nket/shared.dart";
@@ -21,13 +22,15 @@ class Utils {
     return fullList.where((element) => element.isClosed && element.verifiedBy != uid).toList();
   }
 
-  List filterAvailable({required List<NketItem>  fullList}) {
-    return fullList.where((element) => element.available).toList();
+  List filterAvailable({required List<NketItem>  fullList, required String uid}) {
+    return fullList.where((element) => element.available &&  element.verifiedBy != uid ).toList();
   }
 
   List filterPending({required List<NketItem>  fullList,required String uid}) {
     return fullList.where((element) => !element.available && !element.isClosed && element.verifiedBy == uid).toList();
   }
+
+
 
   // TODO
   //  per migliorare le prformance fare un map nella fulllist
@@ -38,8 +41,9 @@ class Utils {
 
     List doneByUser = filterDoneByUser(fullList: fullList,uid:uid);
     List closed = filterClosed(fullList: fullList, uid: uid);
-    List available = filterAvailable(fullList: fullList);
+    List available = filterAvailable(fullList: fullList, uid: uid);
     List pending = filterPending(fullList: fullList, uid: uid);
+
 
     return {
       "pending": pending,

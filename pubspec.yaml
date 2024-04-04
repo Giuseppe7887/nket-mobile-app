@@ -44,6 +44,7 @@ dependencies:
   firebase_database: ^10.4.9
   uuid: ^4.3.3
   cloud_firestore: ^4.15.8
+  grouped_list: ^5.1.2
 
 dev_dependencies:
   flutter_test:

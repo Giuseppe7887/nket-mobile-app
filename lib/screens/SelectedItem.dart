@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:nket/shared.dart';
 
 // camera component
@@ -10,9 +11,10 @@ import 'package:nket/components/Camera.dart';
 late List<CameraDescription> _cameras;
 
 class SelectedItem extends StatefulWidget {
-  SelectedItem({super.key, required this.item});
+  SelectedItem({super.key, required this.item, required this.setReady});
 
   NketItem item;
+  var setReady;
 
   @override
   State<SelectedItem> createState() => _SelectedItemState();
@@ -21,9 +23,6 @@ class SelectedItem extends StatefulWidget {
 class _SelectedItemState extends State<SelectedItem> {
   @override
   Widget build(BuildContext context) {
-
-    Size phoneSize = MediaQuery.of(context).size;
-
     return Scaffold(
       appBar: AppBar(
           leading: IconButton(
@@ -35,8 +34,12 @@ class _SelectedItemState extends State<SelectedItem> {
                   color: Colors.white, fontWeight: FontWeight.w700))),
       body: Column(
         children: [
-          Camera(cameraLabel: const Text("scatta la foto al negozio",style: TextStyle(color: Colors.white)))
-        ],    
+          Camera(
+            setReady:widget.setReady,
+              cameraLabel: const Text("please take picture of store",
+                  style: TextStyle(color: Colors.white)),
+              item: widget.item)
+        ],
       ),
     );
   }

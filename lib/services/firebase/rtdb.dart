@@ -1,4 +1,5 @@
 import 'package:firebase_database/firebase_database.dart';
+import 'package:nket/services/firebase/auth.dart';
 import 'package:uuid/uuid.dart';
 
 final String idAzienda = "id_azienda";
@@ -23,6 +24,7 @@ class RtDb {
       required String id}) async {
     var l = FirebaseDatabase.instance.ref("prices/$idAzienda/${Uuid().v4()}");
     await l.set({
+      "firebaseId":l.ref.key,
       "title": title,
       "description": description,
       "id": id,
@@ -32,5 +34,19 @@ class RtDb {
       "available": true,
       "verifiedBy": ""
     });
+  }
+
+  Future assignResearchToUser({required String itemId}) async {
+    String userId = Auth().currentUser()!.uid;
+
+    print(itemId);
+    DatabaseReference priceLIstRefInDb = FirebaseDatabase.instance.ref("prices/$idAzienda/$itemId");
+
+    priceLIstRefInDb.update(
+      {
+        "available":false,
+        "verifiedBy":userId
+      }
+    );
   }
 }

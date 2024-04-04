@@ -1,6 +1,3 @@
-// UI - UX
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:nket/services/firebase/rtdb.dart';
 
@@ -27,12 +24,14 @@ class _HomeState extends State<Home> {
   };
 
   bool init = false;
+  bool ready = false;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
 
+    ready = true;
     RtDb().update(cb: (Map result) {
       List<NketItem> resultToList = result.keys
           .map((e) =>
@@ -44,11 +43,13 @@ class _HomeState extends State<Home> {
               id: result[e]['id'],
               available: result[e]['available'],
               verifiedBy: result[e]['verifiedBy'],
-              isClosed: result[e]['isClosed']))
+              isClosed: result[e]['isClosed'],
+              firebaseId: result[e]['firebaseId']))
           .toList();
 
       Map<String, List> mapped = Utils().getMappedList(fullList: resultToList);
 
+      if(!ready) return;
       setState(() {
         data = {
           "doneByUser": mapped['doneByUser']!.length,
@@ -61,6 +62,13 @@ class _HomeState extends State<Home> {
     }).catchError((err) {
       print(err);
     });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    ready = false;
   }
 
   @override

@@ -17,14 +17,13 @@ class Index extends StatefulWidget {
 
 class _IndexState extends State<Index> {
   int _currentIndex = 0;
-  final List<String> _titles = ['Home', 'Research','INsert'];
+  final List<String> _titles = ['Home', 'Research', 'INsert'];
 
   void _onChangeScreen(int index) {
     setState(() {
       _currentIndex = index;
     });
   }
-
 
   String? _userEmail = Auth().currentUser()!.email;
 
@@ -35,7 +34,11 @@ class _IndexState extends State<Index> {
     scaffoldKey.currentState?.openDrawer();
   }
 
-  static List<Widget> _widgetOptions = <Widget>[Home(), PriceList(),InsertItem()];
+  static List<Widget> _widgetOptions = <Widget>[
+    Home(),
+    PriceList(),
+    InsertItem()
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +54,8 @@ class _IndexState extends State<Index> {
                 child: GestureDetector(
                   onTap: openScaffold,
                   child: CircleAvatar(
-                    backgroundColor: Utils().genRGBAfromEmail(email: _userEmail),
+                    backgroundColor:
+                        Utils().genRGBAfromEmail(email: _userEmail),
                     child: Text(
                       _userEmail!.substring(0, 1).toUpperCase(),
                       style: const TextStyle(
@@ -81,10 +85,7 @@ class _IndexState extends State<Index> {
                     onPressed: () async => await Auth().logout()),
               ),
               const ListTile(
-                title: TextButton(
-                    child: Text('guadagni'),
-                    onPressed: null
-                ),
+                title: TextButton(child: Text('guadagni'), onPressed: null),
               )
             ],
           )),
