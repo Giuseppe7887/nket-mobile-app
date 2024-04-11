@@ -36,6 +36,10 @@ class Utils {
   //  per migliorare le prformance fare un map nella fulllist
   //  e buttare gli elementi nel map in modo sistematico (cosi ci sarà un solo loop anzichè 4)
 
+
+
+
+
   Map<String, List> getMappedList({required List<NketItem> fullList}) {
     String uid = Auth()!.currentUser()!.uid;
 
@@ -50,6 +54,22 @@ class Utils {
       "doneByUser": doneByUser,
       "closed": closed,
       "available": available
+    };
+  }
+
+
+  Map<String, List> getMappedListForCommitee({required List<NketItem> fullList}) {
+
+    List closed = fullList.where((element) => element.isClosed).toList();
+    List in_progress = fullList.where((element) => !element.available && !element.isClosed).toList();
+    List open = fullList.where((element) => element.available && !element.isClosed).toList();
+
+
+    return {
+      "total": fullList,
+      "open": open,
+      "in_progress": in_progress,
+      "closed":closed
     };
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:nket/services/firebase/auth.dart';
+import 'package:nket/services/firebase/firestore.dart';
 import 'package:nket/services/utils.dart';
 
 // subscreens
@@ -17,15 +18,40 @@ class Index extends StatefulWidget {
 
 class _IndexState extends State<Index> {
   int _currentIndex = 0;
-  final List<String> _titles = ['Home', 'Research', 'INsert'];
+  bool showInsert = false;
+  bool getUserType = false;
+  final List<String> _titles = ['Home',"Research"];
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Firestore().getUserData().then((value){
+      if(!value.isFinder){
+        setState(() {
+          showInsert  = true;
+        });
+      }
+      setState(() {
+        getUserType = true;
+      });
+      if(value.isFinder){
+        _widgetOptions.add(const PriceList());
+      }else{
+        _widgetOptions.add(InsertItem());
+      }
+    });
+  }
 
   void _onChangeScreen(int index) {
     setState(() {
+
       _currentIndex = index;
     });
   }
 
-  String? _userEmail = Auth().currentUser()!.email;
+  final String? _userEmail = Auth().currentUser()!.email;
 
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -34,11 +60,11 @@ class _IndexState extends State<Index> {
     scaffoldKey.currentState?.openDrawer();
   }
 
-  static List<Widget> _widgetOptions = <Widget>[
-    Home(),
-    PriceList(),
-    InsertItem()
+  final List<Widget> _widgetOptions = <Widget>[
+    const Home()
   ];
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -69,10 +95,17 @@ class _IndexState extends State<Index> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: _onChangeScreen,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "home"),
-          BottomNavigationBarItem(icon: Icon(Icons.list), label: "research"),
-          BottomNavigationBarItem(icon: Icon(Icons.add), label: "insert")
+        items:  [
+          const BottomNavigationBarItem(icon: Icon(Icons.home), label: "home"),
+          if(!showInsert && getUserType)
+          const BottomNavigationBarItem(icon: Icon(Icons.list), label: "research"),
+          if(showInsert && getUserType)
+          const BottomNavigationBarItem(icon: Icon(Icons.add), label: "insert"),
+          if(!getUserType)
+            const BottomNavigationBarItem(icon: Icon(Icons.timelapse), label: "loading")
+
+
+
         ],
       ),
       drawer: Drawer(

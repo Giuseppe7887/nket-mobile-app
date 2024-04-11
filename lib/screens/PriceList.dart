@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:nket/screens/SelectedItem.dart';
 import 'package:nket/services/utils.dart';
@@ -28,26 +31,24 @@ class _PriceListState extends State<PriceList> {
     "doneByUser": []
   };
 
-
-
-  void setReady(){
-
+  void setReady() {
     RtDb().update(cb: (Map result) {
       List<NketItem> resultToList = result.keys
           .map((e) => NketItem(
-          title: result[e]['title'],
-          description: result[e]['description'],
-          products: result[e]['products'],
-          location: result[e]['location'],
-          id: result[e]['id'],
-          available: result[e]['available'],
-          verifiedBy: result[e]['verifiedBy'],
-          isClosed: result[e]['isClosed'],
-          firebaseId: result[e]['firebaseId']))
+              title: result[e]['title'],
+              description: result[e]['description'],
+              products: result[e]['products'],
+              location: result[e]['location'],
+              id: result[e]['id'],
+              available: result[e]['available'],
+              verifiedBy: result[e]['verifiedBy'],
+              isClosed: result[e]['isClosed'],
+              firebaseId: result[e]['firebaseId']))
           .toList();
 
       Map mapped = Utils().getMappedList(fullList: resultToList);
 
+      // if (!ready) return;
       setState(() {
         mappedData = mapped;
         ready = true;
@@ -55,7 +56,6 @@ class _PriceListState extends State<PriceList> {
     }).catchError((err) {
       print(err);
     });
-
   }
 
   Future<void> onSelectItem({required NketItem item}) async {
@@ -63,19 +63,16 @@ class _PriceListState extends State<PriceList> {
       ready = false;
     });
     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-      return SelectedItem(item: item,setReady:setReady);
+      return SelectedItem(item: item, setReady: setReady);
     }));
   }
-
-
-
-
 
 
   @override
   void initState() {
     // TODO: implement initState
 
+    print('oooooooooooooo');
     ready = true;
     RtDb().update(cb: (Map result) {
       List<NketItem> resultToList = result.keys
@@ -94,6 +91,7 @@ class _PriceListState extends State<PriceList> {
       Map mapped = Utils().getMappedList(fullList: resultToList);
 
       if (!ready) return;
+      print("quiiiiiiiii: $ready");
       setState(() {
         mappedData = mapped;
         ready = true;
@@ -103,6 +101,13 @@ class _PriceListState extends State<PriceList> {
     });
   }
 
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    print("disposed");
+    super.dispose();
+    ready = false;
+  }
   User? currentUser = Auth().currentUser();
 
   Widget BuildListByType(
@@ -177,12 +182,7 @@ class _PriceListState extends State<PriceList> {
         : const Text("");
   }
 
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-    ready = false;
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -192,14 +192,14 @@ class _PriceListState extends State<PriceList> {
         ? ListView(
             children: [
               BuildListByType(
-                  filtered: mappedData["available"],
-                  type: 'AVAILABLE',
-                  color: Colors.orange),
-              const Padding(padding: EdgeInsets.only(bottom: listPadding)),
-              BuildListByType(
                   filtered: mappedData["pending"],
                   type: 'PENDING',
                   color: Colors.green),
+              const Padding(padding: EdgeInsets.only(bottom: listPadding)),
+              BuildListByType(
+                  filtered: mappedData["available"],
+                  type: 'AVAILABLE',
+                  color: Colors.orange),
               const Padding(padding: EdgeInsets.only(bottom: listPadding)),
               BuildListByType(
                   filtered: mappedData["doneByUser"],

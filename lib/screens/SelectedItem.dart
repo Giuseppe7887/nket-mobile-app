@@ -38,7 +38,8 @@ class _SelectedItemState extends State<SelectedItem> {
             setReady:widget.setReady,
               cameraLabel: const Text("please take picture of store",
                   style: TextStyle(color: Colors.white)),
-              item: widget.item)
+              item: widget.item
+          )
         ],
       ),
     );

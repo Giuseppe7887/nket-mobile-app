@@ -15,10 +15,11 @@ class Firestore {
   // }
 
   Future<void> addUser({required String uid}) async {
-    await firestore
-        .collection('users')
-        .doc(uid)
-        .set({"uid": uid, "pricesFound": []});
+    await firestore.collection('users').doc(uid).set({
+      "uid": uid,
+      "pricesFound": [],
+      "finder": false
+    }); // finder will be the price researcher
   }
 
   Future<NketUser> getUserData() async {
@@ -28,7 +29,15 @@ class Firestore {
         .where(FieldPath.documentId, isEqualTo: userId)
         .get();
     Map<String, dynamic> userFound = snapshot.docs[0].data();
-    return NketUser(
-        pricesFound: userFound['pricesFound'], uid: userFound['uid']);
+    NketUser finalUser = NketUser(
+        uid: userFound['uid'],
+        isFinder: userFound['isFinder']);
+    if(userFound["isFinder"]){
+      finalUser.pricesFound = List<String>.from(userFound['pricesFound']);
+    }else{
+      finalUser.researches = List<String>.from(userFound['researches']);
+
+    }
+    return finalUser;
   }
 }

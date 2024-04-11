@@ -37,10 +37,16 @@ class NketItem {
 
 class NketUser {
   NketUser({
-    required this.pricesFound,
+    this.pricesFound, // for finder
+    this.researches, // for commitee
+    required this.isFinder,
     required this.uid
   });
 
+  List<String>? pricesFound;
+  List<String>? researches;
+
+
   String uid;
-  List<String> pricesFound;
+  bool isFinder;
 }

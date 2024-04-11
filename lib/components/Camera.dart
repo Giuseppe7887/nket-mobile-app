@@ -10,7 +10,11 @@ import 'package:nket/services/firebase/rtdb.dart';
 import 'package:nket/shared.dart';
 
 class Camera extends StatefulWidget {
-  Camera({super.key, required this.cameraLabel,required this.item,required this.setReady});
+  Camera(
+      {super.key,
+      required this.cameraLabel,
+      required this.item,
+      required this.setReady});
 
   Widget cameraLabel;
   NketItem item;
@@ -87,88 +91,90 @@ class _CameraState extends State<Camera> {
     }
 
     void manageProcessEnd(String status) {
-
-      widget.setReady();
       if (status == "ok") {
         Navigator.of(context).pop();
         Navigator.of(context).pop();
+        widget.setReady();
+
       } else {
         Navigator.of(context).pop();
       }
+
     }
 
-    void assignResearchToUser(String status, String message)async{
-
-      RtDb().assignResearchToUser(itemId:widget.item.firebaseId).then((value) => null).then((value){
-        showDialog(
+    void assignResearchToUser(String status, String message) async {
+      if (status != "ok") {
+        return showDialog(
             context: context,
-            builder: (BuildContext context) {
+            builder: (context) {
               return AlertDialog(
-                title: Text(message!),
-                icon: Icon(
-                    status == "ok" ? Icons.done : Icons.dangerous_sharp),
-                iconColor: status == "ok" ? Colors.green : Colors.red,
-                // content: Text(status == "ok" ? "you can start price research":"something gone wrong"),
-                actions: [
-                  TextButton(
-                    onPressed: () => manageProcessEnd(status),
-                    child: const Text('Ok'),
-                  ),
-                ],
-              );
-            });
-      }).catchError((err){
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: const Text("error"),
-                icon: const Icon(
-                   Icons.dangerous_sharp),
+                title: Text(message.toString()),
+                icon: const Icon(Icons.dangerous_sharp),
                 iconColor: Colors.red,
-                // content: Text(status == "ok" ? "you can start price research":"something gone wrong"),
+                // content: Text(),
                 actions: [
                   TextButton(
-                    onPressed: ()=>Navigator.of(context).pop(),
+                    onPressed: () => Navigator.of(context).pop(),
                     child: const Text('Ok'),
                   ),
                 ],
               );
             });
-      });
-
-
-      // showDialog(
-      //     context: context,
-      //     builder: (BuildContext context) {
-      //       return AlertDialog(
-      //         title: Text(message!),
-      //         icon: Icon(
-      //             status == "ok" ? Icons.done : Icons.dangerous_sharp),
-      //         iconColor: status == "ok" ? Colors.green : Colors.red,
-      //         // content: Text(status == "ok" ? "you can start price research":"something gone wrong"),
-      //         actions: [
-      //           TextButton(
-      //             onPressed: () => manageProcessEnd(status),
-      //             child: const Text('Ok'),
-      //           ),
-      //         ],
-      //       );
-      //     });
+      } else {
+        RtDb()
+            .assignResearchToUser(itemId: widget.item.firebaseId)
+            .then((value) => null)
+            .then((value) {
+          showDialog(
+              barrierDismissible: false,
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text(message!),
+                  icon:
+                      Icon(status == "ok" ? Icons.done : Icons.dangerous_sharp),
+                  iconColor: status == "ok" ? Colors.green : Colors.red,
+                  // content: Text(status == "ok" ? "you can start price research":"something gone wrong"),
+                  actions: [
+                    TextButton(
+                      onPressed: () => manageProcessEnd(status),
+                      child: const Text('Ok'),
+                    ),
+                  ],
+                );
+              });
+        }).catchError((err) {
+          print("server error: $err");
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text("errore"),
+                  icon: const Icon(Icons.dangerous_sharp),
+                  iconColor: Colors.red,
+                  // content: Text(status == "ok" ? "you can start price research":"something gone wrong"),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text('Ok'),
+                    ),
+                  ],
+                );
+              });
+        });
+      }
     }
 
-
-
-
-    Future<void> debugRequest()async{
-      Uri DEBUG_API = Uri.parse("https://faas-fra1-afec6ce7.doserverless.co/api/v1/web/fn-760378e2-baa1-4554-a8e9-6c984e8dc724/default/test-1");
-      http.get(DEBUG_API).then((response){
+    Future<void> debugRequest() async {
+      Uri DEBUG_API = Uri.parse(
+          "https://faas-fra1-afec6ce7.doserverless.co/api/v1/web/fn-760378e2-baa1-4554-a8e9-6c984e8dc724/default/test-1");
+      http.get(DEBUG_API).then((response) {
         Map<String, dynamic> toJson = json.decode(response.body);
 
         String status = toJson["status"];
         String message = toJson["message"];
 
-        assignResearchToUser(status,message);
+        assignResearchToUser(status, message);
       });
     }
 
@@ -183,37 +189,33 @@ class _CameraState extends State<Camera> {
           await http.MultipartFile.fromPath("file", pictureTaken);
       request.files.add(multipartFile);
 
-      request
-          .send()
-          .then((response) {
-            response.stream.transform(utf8.decoder).listen((response) {
-              Map<String, dynamic> toJson = json.decode(response);
+      request.send().then((response) {
+        response.stream.transform(utf8.decoder).listen((response) {
+          Map<String, dynamic> toJson = json.decode(response);
 
-              String status = toJson["status"];
-              String message = toJson["message"];
+          String status = toJson["status"];
+          String message = toJson["message"];
 
-              assignResearchToUser(status,message);
-
-
-
+          assignResearchToUser(status, message);
+        });
+      }).catchError((error) {
+        showDialog(
+            barrierDismissible: false,
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text("error"),
+                icon: const Icon(Icons.dangerous_sharp),
+                iconColor: Colors.red,
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('Ok'),
+                  ),
+                ],
+              );
             });
-          }).catchError((error) {
-            showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text("error"),
-                    icon: const Icon(Icons.dangerous_sharp),
-                    iconColor: Colors.red,
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        child: const Text('Ok'),
-                      ),
-                    ],
-                  );
-                });
-          });
+      });
     }
 
     return Expanded(
@@ -229,25 +231,24 @@ class _CameraState extends State<Camera> {
             CameraPreview(_controller,
                 child: Center(child: widget.cameraLabel)),
           if (_initializeControllerOk)
-            Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: IconButton(
-                    icon: const Icon(Icons.circle_outlined, size: 75),
-                    onPressed: takePicture)),
+            IconButton(
+                icon: const Icon(Icons.circle_outlined, size: 75),
+                onPressed: takePicture),
           if (pictureTaken != "")
             Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   IconButton(
                       padding: const EdgeInsets.all(15),
                       onPressed: debugRequest,
-                      icon: const Icon(Icons.send),
-                      style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all(Colors.green),
-                      )),
+                      icon: const Icon(Icons.send, size: 30),
+                      color: Colors.green,
+                      tooltip: "send"),
+                  // Padding(padding: EdgeInsets.only(left: 10,right: 5)),
                   IconButton(
+                      tooltip: "cancel",
+                      color: Colors.red,
                       padding: const EdgeInsets.all(15),
                       onPressed: () {
                         setState(() {
@@ -255,10 +256,11 @@ class _CameraState extends State<Camera> {
                           initCamera();
                         });
                       },
-                      icon: const Icon(Icons.cancel),
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(Colors.red),
-                      ))
+                      icon: const Icon(Icons.cancel, size: 30)
+                      // style: ButtonStyle(
+                      //   backgroundColor: MaterialStateProperty.all(Colors.red),
+                      // )
+                      )
                 ])
         ]));
   }

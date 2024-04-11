@@ -1,3 +1,7 @@
+// custom
+lib/services/firebase/*
+
+
 # Miscellaneous
 *.class
 *.log
