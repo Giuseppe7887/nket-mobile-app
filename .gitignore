@@ -1,5 +1,6 @@
-// custom
-lib/services/firebase/*
+# custom
+lib/services/firebase
+lib/firebase_options.dart
 
 
 # Miscellaneous
