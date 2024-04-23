@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:nket/screens/ProductResearch.dart';
 import 'package:nket/screens/SelectedItem.dart';
 import 'package:nket/services/utils.dart';
 
@@ -25,7 +26,7 @@ class _PriceListState extends State<PriceList> {
   final String expired = "not available";
   bool mounted = false;
   bool ready = false;
-  Map<dynamic, dynamic> mappedData = {
+  Map<String, List<NketItem>> mappedData = {
     "available": [],
     "pending": [],
     "doneByUser": []
@@ -37,7 +38,7 @@ class _PriceListState extends State<PriceList> {
           .map((e) => NketItem(
               title: result[e]['title'],
               description: result[e]['description'],
-              products: result[e]['products'],
+              products: Map<String,Map>.from(result[e]['products']),
               location: result[e]['location'],
               id: result[e]['id'],
               available: result[e]['available'],
@@ -46,7 +47,7 @@ class _PriceListState extends State<PriceList> {
               firebaseId: result[e]['firebaseId']))
           .toList();
 
-      Map mapped = Utils().getMappedList(fullList: resultToList);
+      Map<String,List<NketItem>> mapped = Utils().getMappedList(fullList: resultToList);
 
       // if (!ready) return;
       setState(() {
@@ -72,14 +73,13 @@ class _PriceListState extends State<PriceList> {
   void initState() {
     // TODO: implement initState
 
-    print('oooooooooooooo');
     ready = true;
     RtDb().update(cb: (Map result) {
       List<NketItem> resultToList = result.keys
           .map((e) => NketItem(
               title: result[e]['title'],
               description: result[e]['description'],
-              products: result[e]['products'],
+              products: Map<String,Map>.from(result[e]['products']),
               location: result[e]['location'],
               id: result[e]['id'],
               available: result[e]['available'],
@@ -88,7 +88,7 @@ class _PriceListState extends State<PriceList> {
               firebaseId: result[e]['firebaseId']))
           .toList();
 
-      Map mapped = Utils().getMappedList(fullList: resultToList);
+      Map<String, List<NketItem>> mapped = Utils().getMappedList(fullList: resultToList);
 
       if (!ready) return;
       print("quiiiiiiiii: $ready");
@@ -111,7 +111,7 @@ class _PriceListState extends State<PriceList> {
   User? currentUser = Auth().currentUser();
 
   Widget BuildListByType(
-      {required String type, required List filtered, required Color color}) {
+      {required String type, required List<NketItem> filtered, required Color color}) {
     return filtered.length > 0
         ? Column(
             children: [
@@ -122,7 +122,7 @@ class _PriceListState extends State<PriceList> {
                     filtered[index].isExpanded = isExpanded;
                   });
                 },
-                children: filtered.map<ExpansionPanel>((item) {
+                children: filtered.map<ExpansionPanel>((NketItem item) {
                   return ExpansionPanel(
                     headerBuilder: (BuildContext context, bool isExpanded) {
                       return ListTile(
@@ -158,8 +158,16 @@ class _PriceListState extends State<PriceList> {
                               : Row(children: [
                                   item.verifiedBy == currentUser!.uid &&
                                           !item.isClosed
-                                      ? const Text("back to price",
-                                          style: TextStyle(color: Colors.green))
+                                      ? InkWell(
+                                        onTap:(){
+                                          Navigator.of(context).push(MaterialPageRoute(builder:(context){
+                                            return ProductResearch(item:item);
+                                          }));
+                                        },
+                                        child: Text("back to price",
+                                            style: TextStyle(color: Colors.green)
+                                      ),
+                                      )
                                       : Text(expired,
                                           style: const TextStyle(
                                               color: Colors.grey)),
@@ -192,17 +200,17 @@ class _PriceListState extends State<PriceList> {
         ? ListView(
             children: [
               BuildListByType(
-                  filtered: mappedData["pending"],
+                  filtered: mappedData["pending"]!,
                   type: 'PENDING',
                   color: Colors.green),
               const Padding(padding: EdgeInsets.only(bottom: listPadding)),
               BuildListByType(
-                  filtered: mappedData["available"],
+                  filtered: mappedData["available"]!,
                   type: 'AVAILABLE',
                   color: Colors.orange),
               const Padding(padding: EdgeInsets.only(bottom: listPadding)),
               BuildListByType(
-                  filtered: mappedData["doneByUser"],
+                  filtered: mappedData["doneByUser"]!,
                   type: 'DONE',
                   color: Colors.grey),
             ],

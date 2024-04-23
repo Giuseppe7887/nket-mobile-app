@@ -14,19 +14,19 @@ class Utils {
     return Color.fromRGBO(rgb[0], rgb[1], rgb[2], 1);
   }
 
-  List filterDoneByUser({required List<NketItem>  fullList,required String uid}) {
+  List<NketItem> filterDoneByUser({required List<NketItem>  fullList,required String uid}) {
     return fullList.where((element) => element.isClosed && element.verifiedBy == uid).toList();
   }
 
-  List filterClosed({required List<NketItem>  fullList, required String uid}) {
+  List<NketItem> filterClosed({required List<NketItem>  fullList, required String uid}) {
     return fullList.where((element) => element.isClosed && element.verifiedBy != uid).toList();
   }
 
-  List filterAvailable({required List<NketItem>  fullList, required String uid}) {
+  List<NketItem> filterAvailable({required List<NketItem>  fullList, required String uid}) {
     return fullList.where((element) => element.available &&  element.verifiedBy != uid ).toList();
   }
 
-  List filterPending({required List<NketItem>  fullList,required String uid}) {
+  List<NketItem> filterPending({required List<NketItem>  fullList,required String uid}) {
     return fullList.where((element) => !element.available && !element.isClosed && element.verifiedBy == uid).toList();
   }
 
@@ -40,13 +40,13 @@ class Utils {
 
 
 
-  Map<String, List> getMappedList({required List<NketItem> fullList}) {
+  Map<String, List<NketItem>> getMappedList({required List<NketItem> fullList}) {
     String uid = Auth()!.currentUser()!.uid;
 
-    List doneByUser = filterDoneByUser(fullList: fullList,uid:uid);
-    List closed = filterClosed(fullList: fullList, uid: uid);
-    List available = filterAvailable(fullList: fullList, uid: uid);
-    List pending = filterPending(fullList: fullList, uid: uid);
+    List<NketItem> doneByUser = filterDoneByUser(fullList: fullList,uid:uid);
+    List<NketItem> closed = filterClosed(fullList: fullList, uid: uid);
+    List<NketItem> available = filterAvailable(fullList: fullList, uid: uid);
+    List<NketItem> pending = filterPending(fullList: fullList, uid: uid);
 
 
     return {

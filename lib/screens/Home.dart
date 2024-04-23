@@ -60,7 +60,7 @@ class _HomeState extends State<Home> {
               .map((e) => NketItem(
                   title: result[e]['title'],
                   description: result[e]['description'],
-                  products: result[e]['products'],
+                  products:Map<String,Map>.from(result[e]["products"]),
                   location: result[e]['location'],
                   id: result[e]['id'],
                   available: result[e]['available'],
@@ -74,7 +74,7 @@ class _HomeState extends State<Home> {
 
           if (!ready) return;
           setState(() {
-            commiteeData = {
+            finderData = {
               "doneByUser": mapped['doneByUser']!.length,
               "available": mapped['available']!.length,
               "closed": mapped['closed']!.length,

@@ -25,7 +25,7 @@ class NketItem {
 
   String title;
   String description;
-  List products;
+  Map<String,Map> products; // {name, found}
   Map location;
   String id;
   bool available;
@@ -49,4 +49,20 @@ class NketUser {
 
   String uid;
   bool isFinder;
+}
+
+
+class Product{
+  Product({
+    required this.name,
+    required this.done,
+    this.imageUrl,
+    this.isExpanded = false
+  });
+
+  String name;
+  bool done;
+
+  String? imageUrl;
+  bool? isExpanded;
 }
